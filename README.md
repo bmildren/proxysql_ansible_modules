@@ -1,6 +1,6 @@
 # proxysql_ansible_modules
 
-I'll make a pull request against ansible-modules-extras, however in the meantime you can copy the modules `./library` dir colocated with your playbook (or any other dir defined using the library config option)
+I'll make a pull request against ansible-modules-extras, however in the meantime you can copy the modules to a `./library` dir colocated with your playbook (or any other dir defined using the ansible library config option)
 
 I've produced a basic example below of how the modules can be used based on the "Mini HOW TO on ProxySQL Configuration" in the proxysql docs.  The example supplies the default admin:admin creds, however a config file containing the username and password can also be used.
 
