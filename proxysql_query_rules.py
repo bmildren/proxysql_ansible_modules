@@ -152,7 +152,7 @@ options:
       - By default we avoid deleting more than one schedule in a single batch,
         however if you need this behaviour and you're not concerned about the
         schedules deleted, you can set I(force_delete) to C(True).
-      default: False
+    default: False
   save_to_disk:
     description:
       - Save mysql host config to sqlite db on disk to persist the

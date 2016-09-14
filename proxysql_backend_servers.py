@@ -176,6 +176,7 @@ stdout:
             "weight": "1"
         },
         "state": "present"
+    }
 '''
 
 import sys
