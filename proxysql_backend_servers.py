@@ -158,7 +158,7 @@ stdout:
     returned: On create/update will return the newly modified host, on delete
               it will return the deleted record.
     type: dict
-    sample": {
+    "sample": {
         "changed": true,
         "hostname": "192.168.52.1",
         "msg": "Added server to mysql_hosts",
@@ -177,6 +177,8 @@ stdout:
         },
         "state": "present"
 '''
+
+import sys
 
 try:
     import MySQLdb
@@ -254,8 +256,8 @@ class ProxySQLServer(object):
                             "max_latency_ms",
                             "comment"]
 
-        self.config_data = {key: module.params[key]
-                            for key in config_data_keys}
+        self.config_data = dict((k, module.params[k])
+                                for k in (config_data_keys))
 
     def check_server_config_exists(self, cursor):
         query_string = \
@@ -484,7 +486,8 @@ def main():
                                login_password,
                                config_file,
                                cursor_class=MySQLdb.cursors.DictCursor)
-    except MySQLdb.Error, e:
+    except MySQLdb.Error:
+        e = sys.exc_info()[1]
         module.fail_json(
             msg="unable to connect to ProxySQL Admin Module.. %s" % e
         )
@@ -513,7 +516,8 @@ def main():
                                  " and doesn't need to be updated.")
                 result['server'] = \
                     proxysql_server.get_server_config(cursor)
-        except MySQLdb.Error, e:
+        except MySQLdb.Error:
+            e = sys.exc_info()[1]
             module.fail_json(
                 msg="unable to modify server.. %s" % e
             )
@@ -528,7 +532,8 @@ def main():
                 result['changed'] = False
                 result['msg'] = ("The server is already absent from the" +
                                  " mysql_hosts memory configuration")
-        except MySQLdb.Error, e:
+        except MySQLdb.Error:
+            e = sys.exc_info()[1]
             module.fail_json(
                 msg="unable to remove server.. %s" % e
             )

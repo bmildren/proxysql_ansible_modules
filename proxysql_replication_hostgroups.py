@@ -126,6 +126,8 @@ stdout:
     }
 '''
 
+import sys
+
 try:
     import MySQLdb
     import MySQLdb.cursors
@@ -234,7 +236,7 @@ class ProxySQLReplicationHostgroup(object):
         query_data = \
             [self.writer_hostgroup,
              self.reader_hostgroup,
-             self.comment if None else '']
+             self.comment or '']
 
         cursor.execute(query_string, query_data)
         return True
@@ -357,7 +359,8 @@ def main():
                                login_password,
                                config_file,
                                cursor_class=MySQLdb.cursors.DictCursor)
-    except MySQLdb.Error, e:
+    except MySQLdb.Error:
+        e = sys.exc_info()[1]
         module.fail_json(
             msg="unable to connect to ProxySQL Admin Module.. %s" % e
         )
@@ -388,7 +391,8 @@ def main():
                     result['repl_group'] = \
                         proxysql_repl_group.get_repl_group_config(cursor)
 
-        except MySQLdb.Error, e:
+        except MySQLdb.Error:
+            e = sys.exc_info()[1]
             module.fail_json(
                 msg="unable to modify replication hostgroup.. %s" % e
             )
@@ -406,7 +410,8 @@ def main():
                                  " mysql_replication_hostgroups memory" +
                                  " configuration")
 
-        except MySQLdb.Error, e:
+        except MySQLdb.Error:
+            e = sys.exc_info()[1]
             module.fail_json(
                 msg="unable to delete replication hostgroup.. %s" % e
             )

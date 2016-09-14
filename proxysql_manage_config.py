@@ -118,6 +118,8 @@ stdout:
     }
 '''
 
+import sys
+
 try:
     import MySQLdb
 except ImportError:
@@ -220,7 +222,8 @@ def main():
                                login_user,
                                login_password,
                                config_file)
-    except MySQLdb.Error, e:
+    except MySQLdb.Error:
+        e = sys.exc_info()[1]
         module.fail_json(
             msg="unable to connect to ProxySQL Admin Module.. %s" % e
         )
@@ -233,7 +236,8 @@ def main():
     try:
         result['changed'] = manage_config(manage_config_settings,
                                           cursor)
-    except MySQLdb.Error, e:
+    except MySQLdb.Error:
+        e = sys.exc_info()[1]
         module.fail_json(
             msg="unable to manage config.. %s" % e
         )

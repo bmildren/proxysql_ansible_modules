@@ -96,7 +96,7 @@ options:
   cache_ttl:
     description:
       - The number of milliseconds for which to cache the result of the query.
-        Note: in ProxySQL 1.1 I(cache_ttl) was in seconds. [integer]
+        Note in ProxySQL 1.1 I(cache_ttl) was in seconds. [integer]
   timeout:
     description:
       - The maximum timeout in milliseconds with which the matched or rewritten
@@ -260,6 +260,8 @@ stdout:
     }
 '''
 
+import sys
+
 try:
     import MySQLdb
     import MySQLdb.cursors
@@ -330,8 +332,8 @@ class ProxyQueryRule(object):
                             "apply",
                             "comment"]
 
-        self.config_data = {key: module.params[key]
-                            for key in config_data_keys}
+        self.config_data = dict((k, module.params[k])
+                                for k in (config_data_keys))
 
     def check_rule_pk_exists(self, cursor):
         query_string = \
@@ -588,7 +590,8 @@ def main():
                                login_password,
                                config_file,
                                cursor_class=MySQLdb.cursors.DictCursor)
-    except MySQLdb.Error, e:
+    except MySQLdb.Error:
+        e = sys.exc_info()[1]
         module.fail_json(
             msg="unable to connect to ProxySQL Admin Module.. %s" % e
         )
@@ -618,7 +621,8 @@ def main():
                 result['rules'] = \
                     proxysql_query_rule.get_rule_config(cursor)
 
-        except MySQLdb.Error, e:
+        except MySQLdb.Error:
+            e = sys.exc_info()[1]
             module.fail_json(
                 msg="unable to modify rule.. %s" % e
             )
@@ -641,7 +645,8 @@ def main():
                 result['changed'] = False
                 result['msg'] = ("The rule is already absent from the" +
                                  " mysql_query_rules memory configuration")
-        except MySQLdb.Error, e:
+        except MySQLdb.Error:
+            e = sys.exc_info()[1]
             module.fail_json(
                 msg="unable to remove rule.. %s" % e
             )

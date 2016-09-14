@@ -170,6 +170,8 @@ stdout:
     }
 '''
 
+import sys
+
 try:
     import MySQLdb
     import MySQLdb.cursors
@@ -226,8 +228,8 @@ class ProxySQLUser(object):
                             "fast_forward",
                             "max_connections"]
 
-        self.config_data = {key: module.params[key]
-                            for key in config_data_keys}
+        self.config_data = dict((k, module.params[k])
+                                for k in (config_data_keys))
 
     def check_user_config_exists(self, cursor):
         query_string = \
@@ -454,7 +456,8 @@ def main():
                                login_password,
                                config_file,
                                cursor_class=MySQLdb.cursors.DictCursor)
-    except MySQLdb.Error, e:
+    except MySQLdb.Error:
+        e = sys.exc_info()[1]
         module.fail_json(
             msg="unable to connect to ProxySQL Admin Module.. %s" % e
         )
@@ -483,7 +486,8 @@ def main():
                                  " and doesn't need to be updated.")
                 result['user'] = \
                     proxysql_user.get_user_config(cursor)
-        except MySQLdb.Error, e:
+        except MySQLdb.Error:
+            e = sys.exc_info()[1]
             module.fail_json(
                 msg="unable to modify user.. %s" % e
             )
@@ -498,7 +502,8 @@ def main():
                 result['changed'] = False
                 result['msg'] = ("The user is already absent from the" +
                                  " mysql_users memory configuration")
-        except MySQLdb.Error, e:
+        except MySQLdb.Error:
+            e = sys.exc_info()[1]
             module.fail_json(
                 msg="unable to remove user.. %s" % e
             )

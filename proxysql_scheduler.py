@@ -69,7 +69,7 @@ options:
       - By default we avoid deleting more than one schedule in a single batch,
         however if you need this behaviour and you're not concerned about the
         schedules deleted, you can set I(force_delete) to C(True).
-      default: False
+    default: False
   save_to_disk:
     description:
       - Save mysql host config to sqlite db on disk to persist the
@@ -156,6 +156,8 @@ stdout:
     }
 '''
 
+import sys
+
 try:
     import MySQLdb
     import MySQLdb.cursors
@@ -216,8 +218,8 @@ class ProxySQLSchedule(object):
                             "arg5",
                             "comment"]
 
-        self.config_data = {key: module.params[key]
-                            for key in config_data_keys}
+        self.config_data = dict((k, module.params[k])
+                                for k in (config_data_keys))
 
     def check_schedule_config(self, cursor):
         query_string = \
@@ -394,7 +396,8 @@ def main():
                                login_password,
                                config_file,
                                cursor_class=MySQLdb.cursors.DictCursor)
-    except MySQLdb.Error, e:
+    except MySQLdb.Error:
+        e = sys.exc_info()[1]
         module.fail_json(
             msg="unable to connect to ProxySQL Admin Module.. %s" % e
         )
@@ -417,7 +420,8 @@ def main():
                                  " need to be updated.")
                 result['schedules'] = \
                     proxysql_schedule.get_schedule_config(cursor)
-        except MySQLdb.Error, e:
+        except MySQLdb.Error:
+            e = sys.exc_info()[1]
             module.fail_json(
                 msg="unable to modify schedule.. %s" % e
             )
@@ -440,7 +444,8 @@ def main():
                 result['changed'] = False
                 result['msg'] = ("The schedule is already absent from the" +
                                  " memory configuration")
-        except MySQLdb.Error, e:
+        except MySQLdb.Error:
+            e = sys.exc_info()[1]
             module.fail_json(
                 msg="unable to remove schedule.. %s" % e
             )

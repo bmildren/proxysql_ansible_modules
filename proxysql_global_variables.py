@@ -104,6 +104,8 @@ stdout:
     }
 '''
 
+import sys
+
 try:
     import MySQLdb
     import MySQLdb.cursors
@@ -240,7 +242,8 @@ def main():
                                login_password,
                                config_file,
                                cursor_class=MySQLdb.cursors.DictCursor)
-    except MySQLdb.Error, e:
+    except MySQLdb.Error:
+        e = sys.exc_info()[1]
         module.fail_json(
             msg="unable to connect to ProxySQL Admin Module.. %s" % e
         )
@@ -259,7 +262,8 @@ def main():
                     msg="The variable \"%s\" was not found" % variable
                 )
 
-        except MySQLdb.Error, e:
+        except MySQLdb.Error:
+            e = sys.exc_info()[1]
             module.fail_json(
                 msg="unable to get config.. %s" % e
             )
@@ -292,7 +296,8 @@ def main():
                     msg="The variable \"%s\" was not found" % variable
                 )
 
-        except MySQLdb.Error, e:
+        except MySQLdb.Error:
+            e = sys.exc_info()[1]
             module.fail_json(
                 msg="unable to set config.. %s" % e
             )
