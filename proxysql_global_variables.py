@@ -142,9 +142,9 @@ def save_config_to_disk(variable, cursor):
 
 def load_config_to_runtime(variable, cursor):
     if variable.startswith("admin"):
-        cursor.execute("SAVE ADMIN VARIABLES TO DISK")
+        cursor.execute("LOAD ADMIN VARIABLES TO RUNTIME")
     else:
-        cursor.execute("SAVE MYSQL VARIABLES TO DISK")
+        cursor.execute("LOAD MYSQL VARIABLES TO RUNTIME")
     return True
 
 
@@ -211,7 +211,7 @@ def manage_config(variable, save_to_disk, load_to_runtime, cursor, state):
 def main():
     module = AnsibleModule(
         argument_spec=dict(
-            login_user=dict(default="root", type='str'),
+            login_user=dict(default=None, type='str'),
             login_password=dict(default=None, no_log=True, type='str'),
             login_host=dict(default="127.0.0.1"),
             login_unix_socket=dict(default=None),

@@ -182,7 +182,7 @@ def manage_config(manage_config_settings, cursor):
 def main():
     module = AnsibleModule(
         argument_spec=dict(
-            login_user=dict(default="root", type='str'),
+            login_user=dict(default=None, type='str'),
             login_password=dict(default=None, no_log=True, type='str'),
             login_host=dict(default="127.0.0.1"),
             login_unix_socket=dict(default=None),
